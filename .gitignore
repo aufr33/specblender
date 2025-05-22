@@ -1,1 +1,5 @@
 /target
+*.exe
+*.wav
+*.flac
+*.tmp_converted.wav
