@@ -157,11 +157,9 @@ fn read_audio_file(path: &str) -> Result<(Vec<Vec<f32>>, u32, Option<PathBuf>), 
         }
     }
 
-    // Конвертировать в стерео если моно
     if channels_data.len() == 1 {
         channels_data.push(channels_data[0].clone());
     } else if channels_data.len() > 2 {
-        // Если больше 2 каналов, оставить только первые два
         channels_data.truncate(2);
     }
 
@@ -175,7 +173,6 @@ fn resample_if_needed(channels: Vec<Vec<f32>>, from_rate: u32, to_rate: u32) -> 
     
     println!("Resampling from {}Hz to {}Hz...", from_rate, to_rate);
     
-    // Простое линейное ресэмплирование
     let ratio = to_rate as f32 / from_rate as f32;
     let new_len = (channels[0].len() as f32 * ratio) as usize;
     
@@ -188,7 +185,6 @@ fn resample_if_needed(channels: Vec<Vec<f32>>, from_rate: u32, to_rate: u32) -> 
             let frac = src_pos - src_idx as f32;
             
             if src_idx + 1 < channels[ch].len() {
-                // Линейная интерполяция
                 let sample = channels[ch][src_idx] * (1.0 - frac) + channels[ch][src_idx + 1] * frac;
                 resampled[ch].push(sample);
             } else if src_idx < channels[ch].len() {
@@ -250,7 +246,6 @@ fn main() {
 
     let win = select_window(window_type, n_fft);
 
-    // Информация о режиме обработки
     if mono_mode {
         println!("Mode: Pre-processing mono (mix first, then process)");
     } else if mono_post {
@@ -325,7 +320,6 @@ fn main() {
 
     println!("Writing output file...");
     
-    // Обработка моно после стерео обработки (--mono-post)
     let final_output_channels = if mono_post {
         println!("Converting stereo output to mono...");
         let mono_channel: Vec<f32> = output_channels[0].iter()
@@ -376,7 +370,6 @@ fn istft(spec: &[Vec<Complex<f32>>], win: &[f32], hop: usize, ifft: &dyn rustfft
     let mut signal = vec![0.0; signal_len];
     let mut window_sum = vec![0.0; signal_len];
     
-    // Предвычислить квадраты окна для нормализации
     let win_norm: Vec<f32> = win.iter().map(|&w| w * w).collect();
 
     for (i, frame) in spec.iter().enumerate() {
@@ -392,7 +385,6 @@ fn istft(spec: &[Vec<Complex<f32>>], win: &[f32], hop: usize, ifft: &dyn rustfft
         }
     }
 
-    // Нормализация
     for (sample, &norm) in signal.iter_mut().zip(window_sum.iter()) {
         if norm > f32::EPSILON {
             *sample /= norm;
@@ -420,12 +412,10 @@ fn write_wav_24bit(path: &str, ch: &[Vec<f32>], sample_rate: u32) -> Result<(), 
     let data_size = num_samples as u32 * block_align as u32;
     let mut writer = BufWriter::new(File::create(path)?);
 
-    // WAV заголовок
     writer.write_all(b"RIFF")?;
     writer.write_all(&(36 + data_size).to_le_bytes())?;
     writer.write_all(b"WAVE")?;
 
-    // fmt чанк
     writer.write_all(b"fmt ")?;
     writer.write_all(&(16u32).to_le_bytes())?;
     writer.write_all(&(1u16).to_le_bytes())?; // PCM
@@ -435,11 +425,9 @@ fn write_wav_24bit(path: &str, ch: &[Vec<f32>], sample_rate: u32) -> Result<(), 
     writer.write_all(&(block_align as u16).to_le_bytes())?;
     writer.write_all(&(bits_per_sample as u16).to_le_bytes())?;
 
-    // data чанк
     writer.write_all(b"data")?;
     writer.write_all(&data_size.to_le_bytes())?;
 
-    // Запись аудио данных
     for i in 0..num_samples {
         for c in 0..num_channels as usize {
             let sample = (ch[c][i] * 8388607.0).clamp(-8388608.0, 8388607.0) as i32;
