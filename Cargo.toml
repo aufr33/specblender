@@ -1,12 +1,12 @@
 [package]
 name = "min_mag"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 [dependencies]
-hound = "3.5"
 rustfft = "6.1"
 indicatif = "0.17"
+symphonia = { version = "0.5", features = ["aac", "mp3", "flac", "vorbis", "wav", "isomp4"] }
 
 [profile.release]
 panic = "abort"
@@ -19,3 +19,7 @@ debug = false
 
 [workspace]
 resolver = "2"
+
+[[bin]]
+name = "min_mag"
+path = "src/main.rs"
