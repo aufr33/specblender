@@ -1,6 +1,6 @@
 # SpecBlender
 
-A Rust-based spectral sound processing toolkit using STFT. This contains some algorithms from [spec_utils.py](https://github.com/Anjok07/ultimatevocalremovergui/blob/5517e0cf0d1acd16a1618eeedec596957523f9e1/lib_v5/spec_utils.py#L466).
+A Rust-based spectral sound processing toolkit using STFT. This contains some algorithms from [spec_utils.py](https://github.com/Anjok07/ultimatevocalremovergui/blob/5517e0cf0d1acd16a1618eeedec596957523f9e1/lib_v5/spec_utils.py#L466). Compared to the Python version, the Rust implementation runs faster. For example, min-mag runs three times faster (on a Ryzen 7).
 
 ## Requirements
 
