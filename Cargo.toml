@@ -6,19 +6,14 @@ edition = "2021"
 [dependencies]
 rustfft = "6.1"
 indicatif = "0.17"
-symphonia = { version = "0.5", features = ["aac", "mp3", "flac", "vorbis", "wav", "isomp4"] }
+hound = "3.5"
 
 [profile.release]
 panic = "abort"
 debug = false
 strip = true
 lto = true
-
-[profile.release.package."*"]
-debug = false
-
-[workspace]
-resolver = "2"
+opt-level = 3
 
 [[bin]]
 name = "specblender"
