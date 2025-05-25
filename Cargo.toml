@@ -1,25 +1,20 @@
 [package]
-name = "min_mag"
-version = "0.2.0"
+name = "specblender"
+version = "0.3.0"
 edition = "2021"
 
 [dependencies]
 rustfft = "6.1"
 indicatif = "0.17"
-symphonia = { version = "0.5", features = ["aac", "mp3", "flac", "vorbis", "wav", "isomp4"] }
+hound = "3.5"
 
 [profile.release]
 panic = "abort"
 debug = false
 strip = true
 lto = true
-
-[profile.release.package."*"]
-debug = false
-
-[workspace]
-resolver = "2"
+opt-level = 3
 
 [[bin]]
-name = "min_mag"
+name = "specblender"
 path = "src/main.rs"
