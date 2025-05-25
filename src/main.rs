@@ -54,7 +54,6 @@ fn print_help() {
     println!("  --window=TYPE    Window function: hann or hamming (default: hann)");
     println!("  --stft=MODE      STFT mode: single or multi (default: single)");
     println!("                   multi: processes with two FFT sizes and blends frequency bands");
-    println!("  --streaming      Use streaming mode for large files (reduces memory usage)");
     println!("  --phase=SOURCE   Phase source: auto, input1, input2 (default: auto)");
     println!("                   auto: use phase from signal with min/max magnitude");
     println!("                   input1: always use phase from first input");
