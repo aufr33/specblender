@@ -42,7 +42,6 @@ pub fn process_audio_static<A: Algorithm>(
         println!("Mode: Stereo processing");
     }
     
-    // Выводим детальную информацию о том, как обрабатывается фаза
     crate::algorithms::print_phase_usage_info(algorithm.name(), phase_source);
 
     println!("Reading audio files...");
@@ -88,7 +87,6 @@ pub fn process_audio_static<A: Algorithm>(
         let result_spec = algorithm.process(&spec_a, &spec_b, phase_source);
         let mut y = crate::utils::istft(&result_spec, &win, hop, ifft.as_ref());
         
-        // Заглушаем первую 1мс чтобы убрать щелчок в начале
         let samples_to_mute = (sr1 as f32 * 0.006) as usize; // 6ms
         let mute_count = samples_to_mute.min(y.len());
         for i in 0..mute_count {
