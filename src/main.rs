@@ -105,7 +105,6 @@ macro_rules! dispatch_algorithm {
     ($algorithm:expr, $input1:expr, $input2:expr, $output:expr, $mono_mode:expr, $mono_post:expr, $n_fft:expr, $hop:expr, $window_type:expr, $stft_mode:expr, $phase_source:expr, $streaming_mode:expr, $use_float32:expr) => {
         match $algorithm {
             "min-mag" => {
-                // Проверяем совместимость фазы с алгоритмом
                 if let Err(e) = algorithms::validate_phase_compatibility("min-mag", $phase_source) {
                     eprintln!("Error: {}", e);
                     std::process::exit(1);
