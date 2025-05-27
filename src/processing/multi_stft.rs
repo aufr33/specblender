@@ -58,21 +58,17 @@ pub fn process_multi_stft_static<A: Algorithm>(
     
     let crossover_freq = 1000;
     
-    // Используем разные фильтры в зависимости от режима
 	let filter_complex = if mono_mode {
-		// Для --mono: входные файлы уже правильно усреднены FFmpeg, коррекция не нужна
 		format!(
 			"[0:a]highpass=f={}:poles=2[hp_low];[0:a][hp_low]amerge,pan=mono|c0=c0-c1[lowpass_result];[1:a]highpass=f={}:poles=2[hp_high];[lowpass_result][hp_high]amix=inputs=2:duration=longest:normalize=0,volume=1.0",
 			crossover_freq, crossover_freq
 		)
 	} else if mono_post {
-		// Для --mono-post: входные файлы стерео, выход моно, громкость правильная
 		format!(
 			"[0:a]highpass=f={}:poles=2[hp_low];[0:a][hp_low]amerge,pan=mono|c0=c0-c1[lowpass_result];[1:a]highpass=f={}:poles=2[hp_high];[lowpass_result][hp_high]amix=inputs=2:duration=longest:normalize=0,volume=1.0",
 			crossover_freq, crossover_freq
 		)
 	} else {
-		// Для стерео
 		format!(
 			"[0:a]highpass=f={}:poles=2[hp_low];[0:a][hp_low]amerge,pan=stereo|c0=c0-c2|c1=c1-c3[lowpass_result];[1:a]highpass=f={}:poles=2[hp_high];[lowpass_result][hp_high]amix=inputs=2:duration=longest:normalize=0,volume=1.0",
 			crossover_freq, crossover_freq
@@ -185,7 +181,6 @@ fn process_single_stft_static<A: Algorithm>(
         let result_spec = algorithm.process(&spec_a, &spec_b, phase_source);
         let mut y = crate::utils::istft(&result_spec, &win, hop, ifft.as_ref());
         
-        // Заглушаем первую 1мс чтобы убрать щелчок в начале
         let samples_to_mute = (sr1 as f32 * 0.006) as usize; // 6ms 
         let mute_count = samples_to_mute.min(y.len());
         for i in 0..mute_count {
