@@ -27,7 +27,6 @@ pub fn process_audio_streaming<A: Algorithm>(
 
     println!("Algorithm: {} (streaming mode)", algorithm.name());
     
-    // Выводим детальную информацию о том, как обрабатывается фаза
     crate::algorithms::print_phase_usage_info(algorithm.name(), phase_source);
     
     println!("Reading audio file headers...");
@@ -198,8 +197,8 @@ fn process_chunk<A: Algorithm>(
     fft: &dyn rustfft::Fft<f32>,
     ifft: &dyn rustfft::Fft<f32>,
     phase_source: PhaseSource,
-    is_first_chunk: bool, // Новый параметр
-    sample_rate: u32,     // Новый параметр
+    is_first_chunk: bool, 
+    sample_rate: u32, 
 ) -> Result<Vec<Vec<f32>>, Box<dyn std::error::Error>> {
     let mut output_channels = Vec::new();
 
@@ -213,7 +212,6 @@ fn process_chunk<A: Algorithm>(
         let result_spec = algorithm.process(&spec_a, &spec_b, phase_source);
         let mut y = crate::utils::istft(&result_spec, win, hop, ifft);
         
-        // Заглушаем первую 1мс в первом chunk'е чтобы убрать щелчок
         if is_first_chunk {
             let samples_to_mute = (sample_rate as f32 * 0.006) as usize; // 6ms
             let mute_count = samples_to_mute.min(y.len());
