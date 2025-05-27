@@ -5,7 +5,6 @@ use std::path::PathBuf;
 use std::process::Command;
 use std::{thread, time::Duration};
 
-// Функция для определения моно-источника
 pub fn is_mono_source(path: &str) -> Result<bool, Box<dyn std::error::Error>> {
     let output = Command::new("ffprobe")
         .args(["-v", "quiet", "-select_streams", "a:0", "-show_entries", "stream=channels", "-of", "csv=p=0", path])
@@ -20,15 +19,12 @@ pub fn is_mono_source(path: &str) -> Result<bool, Box<dyn std::error::Error>> {
     }
 }
 
-// Исправленная функция конвертации в стерео с сохранением громкости
 fn decode_with_ffmpeg(input: &str) -> PathBuf {
     let tmp_path = PathBuf::from(format!("{}.tmp_converted.wav", input));
     
-    // Проверяем, моно ли исходный файл
     let is_mono = is_mono_source(input).unwrap_or(false);
     
     let status = if is_mono {
-        // Для моно: дублируем канал без изменения громкости
         Command::new("ffmpeg")
             .args([
                 "-y", "-v", "error", "-i", input, 
@@ -42,7 +38,6 @@ fn decode_with_ffmpeg(input: &str) -> PathBuf {
             .status()
             .expect("Failed to run ffmpeg")
     } else {
-        // Для стерео: стандартная конвертация
         Command::new("ffmpeg")
             .args([
                 "-y", "-v", "error", "-i", input, 
@@ -63,15 +58,12 @@ fn decode_with_ffmpeg(input: &str) -> PathBuf {
     tmp_path
 }
 
-// Исправленная функция конвертации в моно с сохранением громкости
 pub fn decode_with_ffmpeg_mono(input: &str) -> PathBuf {
     let tmp_path = PathBuf::from(format!("{}.tmp_converted.wav", input));
     
-    // Проверяем, стерео ли исходный файл
     let is_mono = is_mono_source(input).unwrap_or(false);
     
     let status = if is_mono {
-        // Для моно: просто конвертируем без изменения громкости
         Command::new("ffmpeg")
             .args([
                 "-y", "-v", "error", "-i", input, 
@@ -84,7 +76,6 @@ pub fn decode_with_ffmpeg_mono(input: &str) -> PathBuf {
             .status()
             .expect("Failed to run ffmpeg")
     } else {
-        // Для стерео: правильно усредняем каналы
         Command::new("ffmpeg")
             .args([
                 "-y", "-v", "error", "-i", input, 
