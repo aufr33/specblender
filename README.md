@@ -32,13 +32,15 @@ Copies phase information from input1 to the magnitude of input2.
 
 | Option | Description |
 |--------|-------------|
-| `--mono` | Export mono output (average channels before processing) |
-| `--mono-post` | Process in stereo, then mix to mono (matches manual mixing) |
-| `--n_fft=N` | FFT window size (default: 2048) |
-| `--hop=H` | Hop length in samples (default: 512) |
+| `--mono` | Export mono output (average of both channels) |
+| `--mono-post` | Process stereo, then mix to mono (matches manual mixing) |
+| `--n_fft=N` | FFT window size (default: 2048, range: 32-65536) |
+| `--hop=H` | Hop length in samples (default: 512, must be ≤ n_fft) |
 | `--window=TYPE` | Window function: `hann` or `hamming` (default: hann) |
-| `--stft=MODE` | STFT processing mode (see below) |
-| `--phase=SOURCE` | Phase source control (see below) |
+| `--stft=MODE` | STFT processing mode: `single` or `multi` (default: single) |
+| `--streaming=MODE` | Streaming mode: `off`, `on`, `auto` (default: auto) |
+| `--pcm_type=TYPE` | PCM output format: `pcm24` or `float32` (default: float32) |
+| `--phase=SOURCE` | Phase source control: `auto`, `input1`, `input2` (default: auto) |
 
 ### STFT Modes
 
@@ -47,6 +49,15 @@ Copies phase information from input1 to the magnitude of input2.
   - Low frequencies: FFT=4096 for better frequency resolution
   - High frequencies: FFT=1024 for better time resolution
   - Intelligent frequency band blending via FFmpeg filters
+
+### Streaming Mode
+- `--streaming=off` - Process entire file in memory (more memory usage)
+- `--streaming=on` - Process in chunks (constant memory usage)  
+- `--streaming=auto` - Automatically use streaming for files longer than 10 minutes
+
+### PCM Output Format
+- `--pcm_type=float32` - 32-bit floating point WAV (default, maximum quality)
+- `--pcm_type=pcm24` - 24-bit integer PCM WAV (smaller file size)
 
 ### Phase Control
 
