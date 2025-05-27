@@ -36,15 +36,12 @@ impl Algorithm for MinMag {
                 
                 match phase_source {
                     PhaseSource::MinMagnitude => {
-                        // Автоматический выбор фазы из сигнала с минимальной магнитудой
                         if mag_a <= mag_b { *a } else { *b }
                     }
                     PhaseSource::Input1 => {
-                        // Принудительно используем фазу из первого входа
                         Complex::from_polar(min_magnitude, a.arg())
                     }
                     PhaseSource::Input2 => {
-                        // Принудительно используем фазу из второго входа  
                         Complex::from_polar(min_magnitude, b.arg())
                     }
                 }
@@ -76,15 +73,12 @@ impl Algorithm for MaxMag {
                 
                 match phase_source {
                     PhaseSource::MinMagnitude => {
-                        // Автоматический выбор фазы из сигнала с максимальной магнитудой
                         if mag_a >= mag_b { *a } else { *b }
                     }
                     PhaseSource::Input1 => {
-                        // Принудительно используем фазу из первого входа
                         Complex::from_polar(max_magnitude, a.arg())
                     }
                     PhaseSource::Input2 => {
-                        // Принудительно используем фазу из второго входа
                         Complex::from_polar(max_magnitude, b.arg())
                     }
                 }
@@ -107,7 +101,7 @@ impl Algorithm for Sub {
         &self,
         spec_a: &[Vec<Complex<f32>>],
         spec_b: &[Vec<Complex<f32>>],
-        phase_source: PhaseSource, // Параметр игнорируется в spectral subtraction
+        phase_source: PhaseSource, 
     ) -> Vec<Vec<Complex<f32>>> {
         spec_a.iter().zip(spec_b.iter()).map(|(arow, brow)| {
             arow.iter().zip(brow.iter()).map(|(x, y)| {
@@ -115,8 +109,6 @@ impl Algorithm for Sub {
                 let y_mag = y.norm();
                 let max_mag = if x_mag >= y_mag { x_mag } else { y_mag };
                 
-                // Для spectral subtraction фаза всегда берется из первого входа
-                // независимо от настройки phase_source, так как это математическая операция
                 let max_complex = Complex::from_polar(max_mag, x.arg());
                 let result = y - max_complex;
                 -result
@@ -138,12 +130,10 @@ impl Algorithm for CopyPhase {
         &self,
         spec_a: &[Vec<Complex<f32>>],
         spec_b: &[Vec<Complex<f32>>],
-        _phase_source: PhaseSource, // Не используется в copy-phase
+        _phase_source: PhaseSource, 
     ) -> Vec<Vec<Complex<f32>>> {
         spec_a.iter().zip(spec_b.iter()).map(|(arow, brow)| {
             arow.iter().zip(brow.iter()).map(|(a, b)| {
-                // Для copy-phase всегда берем магнитуду из input2 и фазу из input1
-                // Это основная функция алгоритма, phase_source игнорируется
                 let magnitude_from_input2 = b.norm();
                 let phase_from_input1 = a.arg();
                 Complex::from_polar(magnitude_from_input2, phase_from_input1)
@@ -152,16 +142,14 @@ impl Algorithm for CopyPhase {
     }
 }
 
-// Функция для проверки совместимости алгоритма с настройками фазы
 pub fn validate_phase_compatibility(algorithm_name: &str, phase_source: PhaseSource) -> Result<(), String> {
     match algorithm_name {
         "min-mag" | "max-mag" => {
-            // Эти алгоритмы поддерживают все варианты phase_source
             Ok(())
         }
         "sub" => {
             match phase_source {
-                PhaseSource::MinMagnitude => Ok(()), // auto допустимо
+                PhaseSource::MinMagnitude => Ok(()), 
                 PhaseSource::Input1 | PhaseSource::Input2 => {
                     Err(format!(
                         "Algorithm '{}' does not support --phase=input1/input2. \
@@ -174,7 +162,7 @@ pub fn validate_phase_compatibility(algorithm_name: &str, phase_source: PhaseSou
         }
         "copy-phase" => {
             match phase_source {
-                PhaseSource::MinMagnitude => Ok(()), // auto допустимо
+                PhaseSource::MinMagnitude => Ok(()), 
                 PhaseSource::Input1 | PhaseSource::Input2 => {
                     Err(format!(
                         "Algorithm '{}' does not support --phase=input1/input2. \
@@ -186,13 +174,11 @@ pub fn validate_phase_compatibility(algorithm_name: &str, phase_source: PhaseSou
             }
         }
         _ => {
-            // Для неизвестных алгоритмов разрешаем все варианты
             Ok(())
         }
     }
 }
 
-// Функция для вывода информации о том, как обрабатывается фаза
 pub fn print_phase_usage_info(algorithm_name: &str, phase_source: PhaseSource) {
     match algorithm_name {
         "min-mag" | "max-mag" => {
