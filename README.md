@@ -32,8 +32,8 @@ Copies phase information from input1 to the magnitude of input2.
 
 | Option | Description |
 |--------|-------------|
-| `--mono` | Export mono output (average of both channels) |
-| `--mono-post` | Process stereo, then mix to mono (matches manual mixing) |
+| `--mono` | Process mono (average of both channels), export mono output |
+| `--mono-post` | Process stereo, then mix to mono, export mono output |
 | `--n_fft=N` | FFT window size (default: 2048, range: 32-65536) |
 | `--hop=H` | Hop length in samples (default: 512, must be ≤ n_fft) |
 | `--window=TYPE` | Window function: `hann` or `hamming` (default: hann) |
